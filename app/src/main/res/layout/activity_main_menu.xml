@@ -1,0 +1,14 @@
+<com.google.android.material.tabs.TabLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <com.google.android.material.tabs.TabItem
+            android:text="alma" android:layout_height="wrap_content" android:layout_width="wrap_content"/>
+    <com.google.android.material.tabs.TabItem
+            android:text="korte" android:layout_height="wrap_content" android:layout_width="wrap_content"/>
+    <com.google.android.material.tabs.TabItem
+            android:text="paradicsom" android:layout_height="wrap_content" android:layout_width="wrap_content"/>
+
+</com.google.android.material.tabs.TabLayout>
