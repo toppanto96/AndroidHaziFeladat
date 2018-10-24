@@ -3,4 +3,6 @@
     <string name="etUsername">Felhasználónév</string>
     <string name="etPassword">Jelszó</string>
     <string name="btnSignIn">Bejelentkezés</string>
+    <string name="tabItemCards">kártyák</string>
+    <string name="tabItemMaps">térkép</string>
 </resources>
