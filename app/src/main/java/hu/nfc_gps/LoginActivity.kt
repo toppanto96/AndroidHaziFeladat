@@ -1,5 +1,6 @@
 package hu.nfc_gps
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -31,14 +32,17 @@ class LoginActivity : AppCompatActivity() {
                     auth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener(this) { task ->
                             if (task.isSuccessful) {
-                                Toast.makeText(this, "Belépés sikeres", Toast.LENGTH_SHORT).show()
+                                startActivity(Intent(this@LoginActivity, MainMenuActivity::class.java)
+                                    .apply {
+                                        putExtra("email", email)
+                                        putExtra("password", password)
+                                    })
                             } else {
                                 Toast.makeText(this, "Belépés sikertelen", Toast.LENGTH_SHORT).show()
                             }
                         }
                 }
             }
-            //startActivity(Intent(this@LoginActivity, MainMenuActivity::class.java))
         }
     }
 }
