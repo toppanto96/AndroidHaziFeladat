@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "865370251654",
+    "firebase_url": "https://nfcgps-9f90c.firebaseio.com",
+    "project_id": "nfcgps-9f90c",
+    "storage_bucket": "nfcgps-9f90c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:865370251654:android:a1f6438a7c7963a6",
+        "android_client_info": {
+          "package_name": "hu.nfc_gps"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "865370251654-t5rqtnrkqsjhp88r7gonrpv2gmlffpe7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "hu.nfc_gps",
+            "certificate_hash": "55168d39d5fdc4ad7535515cb50c10721011f241"
+          }
+        },
+        {
+          "client_id": "865370251654-9bdsap9tggt4orbkvvk7dgmk7ed8oh8m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDExCJc_Mbvj7uSZkPSAJ50PowBaSa9KAk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "865370251654-9bdsap9tggt4orbkvvk7dgmk7ed8oh8m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
