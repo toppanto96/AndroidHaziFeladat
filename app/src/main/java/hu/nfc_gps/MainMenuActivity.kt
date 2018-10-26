@@ -18,8 +18,8 @@ class MainMenuActivity : AppCompatActivity() {
         tabs.setupWithViewPager(tabs_view_pager)
 
         intent.extras.apply {
-            userEmail = get("email").toString()
-            userPassword = get("password").toString()
+            userEmail = get(LoginActivity.EMAIL).toString()
+            userPassword = get(LoginActivity.PASSWORD).toString()
         }
     }
 }

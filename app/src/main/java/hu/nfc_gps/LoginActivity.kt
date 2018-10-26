@@ -11,6 +11,11 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
 
+    companion object {
+        const val EMAIL = "email"
+        const val PASSWORD = "password"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -23,8 +28,8 @@ class LoginActivity : AppCompatActivity() {
             val password = text_input_password.editText?.text.toString()
 
             when {
-                email.isEmpty() -> text_input_email.error = "Érvénytelen email cím."
-                password.isEmpty() -> text_input_password.error = "Érvénytelen jelszó"
+                email.isEmpty() -> text_input_email.error = getString(R.string.invalidEmailText)
+                password.isEmpty() -> text_input_password.error = getString(R.string.invalidPasswordText)
                 else -> {
                     text_input_email.isErrorEnabled = false
                     text_input_password.isErrorEnabled = false
@@ -34,11 +39,14 @@ class LoginActivity : AppCompatActivity() {
                             if (task.isSuccessful) {
                                 startActivity(Intent(this@LoginActivity, MainMenuActivity::class.java)
                                     .apply {
-                                        putExtra("email", email)
-                                        putExtra("password", password)
+                                        putExtra(EMAIL, email)
+                                        putExtra(PASSWORD, password)
                                     })
                             } else {
-                                Toast.makeText(this, "Belépés sikertelen", Toast.LENGTH_SHORT).show()
+                                text_input_email.editText?.text = null
+                                text_input_password.editText?.text = null
+
+                                Toast.makeText(this, getString(R.string.failedLoginText), Toast.LENGTH_SHORT).show()
                             }
                         }
                 }

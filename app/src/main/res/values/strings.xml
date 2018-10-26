@@ -5,4 +5,7 @@
     <string name="btnSignIn">Bejelentkezés</string>
     <string name="tabItemCards">kártyák</string>
     <string name="tabItemMaps">térkép</string>
+    <string name="failedLoginText">Belépés sikertelen</string>
+    <string name="invalidEmailText">Érvénytelen email cím.</string>
+    <string name="invalidPasswordText">Érvénytelen jelszó</string>
 </resources>
