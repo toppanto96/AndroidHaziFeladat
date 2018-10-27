@@ -1,9 +1,11 @@
 package hu.nfc_gps.adapter
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import hu.nfc_gps.NFC_card
@@ -12,6 +14,7 @@ import kotlinx.android.synthetic.main.nfc_card_list_row.view.*
 
 class CardsAdapter : RecyclerView.Adapter<CardsAdapter.ViewHolder> {
 
+    private var selectedCard = -1
     private val cards = mutableListOf<NFC_card>()
     private val context: Context
 
@@ -31,6 +34,13 @@ class CardsAdapter : RecyclerView.Adapter<CardsAdapter.ViewHolder> {
         holder.apply {
             tvPlace.text = place
             tvUntil.text = until
+            rbCard.apply {
+                isChecked = (position == selectedCard)
+                setOnClickListener {
+                    selectedCard = adapterPosition
+                    notifyDataSetChanged()
+                }
+            }
         }
     }
 
@@ -39,5 +49,6 @@ class CardsAdapter : RecyclerView.Adapter<CardsAdapter.ViewHolder> {
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvPlace: TextView = itemView.card_place
         val tvUntil: TextView = itemView.card_until
+        val rbCard: RadioButton = itemView.card_radio_button
     }
 }
