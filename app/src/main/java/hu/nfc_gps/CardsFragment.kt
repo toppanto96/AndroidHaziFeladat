@@ -34,7 +34,6 @@ class CardsFragment : Fragment() {
         )
 
         cardsLayoutManager = LinearLayoutManager(activity as MainMenuActivity)
-        requireActivity()
 
         cards_recycler_view.apply {
             layoutManager = cardsLayoutManager
