@@ -39,6 +39,5 @@ class CardsFragment : Fragment() {
             layoutManager = cardsLayoutManager
             adapter = cardsAdapter
         }
-
     }
 }

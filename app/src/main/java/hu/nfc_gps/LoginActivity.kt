@@ -1,6 +1,8 @@
 package hu.nfc_gps
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -11,9 +13,13 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
 
+    private lateinit var sharedPref: SharedPreferences
+
     companion object {
         const val EMAIL = "email"
         const val PASSWORD = "password"
+        const val MY_SP = "mySp"
+        const val CURRENT_USER_ID = "currentUserId"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,10 +43,21 @@ class LoginActivity : AppCompatActivity() {
                     auth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener(this) { task ->
                             if (task.isSuccessful) {
+
+                                sharedPref = this.getSharedPreferences(MY_SP, Context.MODE_PRIVATE)
+                                sharedPref.edit().apply {
+                                    putString(CURRENT_USER_ID, auth.currentUser?.uid)
+                                    apply()
+                                }
+                                //TODO le kell ellenőrizni, hogy be van-e már jelentkezve valaki(Firebase és SharedPreferences-t is le kell ellenőrizni)
+                                //TODO a kijelentkezést is meg kell csinálni(Firebase és SharedPreferences törlése)
+
                                 startActivity(Intent(this@LoginActivity, MainMenuActivity::class.java)
                                     .apply {
                                         putExtra(EMAIL, email)
                                         putExtra(PASSWORD, password)
+                                        //TODO lehet az adatokat a shared preferences-be kellene átadni, nem így
+                                        //TODO nem is biztos, hogy nyilván kell tartani az email-t, jelszót, elég csak a user ID
                                     })
                             } else {
                                 text_input_email.editText?.text = null
