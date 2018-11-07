@@ -7,20 +7,14 @@ import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import hu.nfc_gps.NFC_card
+import hu.nfc_gps.models.NfcCardModel
 import hu.nfc_gps.R
 import kotlinx.android.synthetic.main.nfc_card_list_row.view.*
 
-class CardsAdapter : RecyclerView.Adapter<CardsAdapter.ViewHolder> {
+class CardsAdapter(private val context: Context) : RecyclerView.Adapter<CardsAdapter.ViewHolder>() {
 
     private var selectedCard = -1
-    private val cards = mutableListOf<NFC_card>()
-    private val context: Context
-
-    constructor(context: Context, cards: List<NFC_card>) : super() {
-        this.context = context
-        this.cards.addAll(cards)
-    }
+    private val cards = mutableListOf<NfcCardModel>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -44,6 +38,16 @@ class CardsAdapter : RecyclerView.Adapter<CardsAdapter.ViewHolder> {
     }
 
     override fun getItemCount() = cards.size
+
+    fun addCard(card: NfcCardModel) {
+        cards.add(card)
+        notifyItemInserted(cards.lastIndex)
+    }
+
+    fun removeCard(card: NfcCardModel) {
+        cards.remove(card)
+        notifyDataSetChanged()
+    }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvPlace: TextView = itemView.card_place
