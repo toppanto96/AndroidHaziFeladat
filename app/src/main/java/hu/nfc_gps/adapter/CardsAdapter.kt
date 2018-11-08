@@ -7,12 +7,15 @@ import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import hu.nfc_gps.models.NfcCardModel
 import hu.nfc_gps.R
+import hu.nfc_gps.models.NfcCardModel
 import kotlinx.android.synthetic.main.nfc_card_list_row.view.*
 
 class CardsAdapter(private val context: Context) : RecyclerView.Adapter<CardsAdapter.ViewHolder>() {
 
+    //TODO forgatás esetén elveszik, hogy melyik kártya van kiválasztva
+    //TODO az AID nincs megjelenítve az XML-ben
+    //TODO ha valaki már  be van jelentkezve, akkor ne kelljen újra bejelentkeznie az app elindításakor
     private var selectedCard = -1
     private val cards = mutableListOf<NfcCardModel>()
 
