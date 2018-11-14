@@ -12,6 +12,10 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import hu.nfc_gps.models.LocationModel
+import java.util.*
 
 class MapsFragment : Fragment() {
 
@@ -20,6 +24,7 @@ class MapsFragment : Fragment() {
     }
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var ref: DatabaseReference
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_maps, container, false)
@@ -39,6 +44,7 @@ class MapsFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity as Activity)
+        ref = FirebaseDatabase.getInstance().reference.child("Tamas").child("Locations")
     }
 
     private fun startLocationMonitoring() {
@@ -55,7 +61,16 @@ class MapsFragment : Fragment() {
 
             locationResult ?: return
             for (location in locationResult.locations) {
-                //TODO itt kell a kapott koordinátákat eltárolni Firebase-be
+                val key = ref.push().key
+                key?.let {
+                    ref.child(it).setValue(
+                        LocationModel(
+                            location.longitude.toString(),
+                            location.latitude.toString(),
+                            Calendar.getInstance().time.toString()
+                        )
+                    )
+                }
             }
         }
     }
