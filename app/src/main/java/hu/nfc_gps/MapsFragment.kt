@@ -12,22 +12,43 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
+import com.google.android.gms.maps.*
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import hu.nfc_gps.models.LocationModel
 import java.util.*
 
-class MapsFragment : Fragment() {
+class MapsFragment : Fragment(), OnMapReadyCallback {
 
     companion object {
         private const val MY_REQUEST_CODE = 100
     }
 
+    lateinit var googleMap: GoogleMap
+    lateinit var mapView: MapView
+    lateinit var myView: View
+
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var ref: DatabaseReference
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_maps, container, false)
+        myView = inflater.inflate(R.layout.fragment_maps, container, false)
+        return myView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        mapView = myView.findViewById(R.id.map) as MapView
+
+        if (mapView != null) {
+            mapView.onCreate(null)
+            mapView.onResume()
+            mapView.getMapAsync(this)
+        }
     }
 
     override fun onResume() {
@@ -114,6 +135,19 @@ class MapsFragment : Fragment() {
                     Toast.makeText(activity as Activity, "Nincs mege az engedély", Toast.LENGTH_SHORT).show()
                 }
             }
+        }
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        MapsInitializer.initialize(context)
+
+        this.googleMap = googleMap
+        val budapest = CameraPosition.builder().target(LatLng(47.0, 19.0)).zoom(10.0F).bearing(0F).tilt(45F).build()
+
+        this.googleMap.apply {
+            mapType = GoogleMap.MAP_TYPE_NORMAL
+            addMarker(MarkerOptions().position(LatLng(47.0, 19.0)).title("Hungary").snippet("Remélem működik"))
+            moveCamera(CameraUpdateFactory.newCameraPosition(budapest))
         }
     }
 }
