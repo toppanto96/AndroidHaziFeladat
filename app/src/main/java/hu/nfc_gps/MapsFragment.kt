@@ -3,6 +3,7 @@ package hu.nfc_gps
 import android.app.Activity
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,12 +13,13 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
-import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.MapsInitializer
+import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import hu.nfc_gps.models.LocationModel
 import java.util.*
 
@@ -25,6 +27,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
     companion object {
         private const val MY_REQUEST_CODE = 100
+        private const val DELTA_TIME = 20_000
     }
 
     lateinit var googleMap: GoogleMap
@@ -44,10 +47,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
         mapView = myView.findViewById(R.id.map) as MapView
 
-        if (mapView != null) {
-            mapView.onCreate(null)
-            mapView.onResume()
-            mapView.getMapAsync(this)
+        mapView.apply {
+            onCreate(null)
+            onResume()
+            getMapAsync(this@MapsFragment)
         }
     }
 
@@ -66,6 +69,41 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity as Activity)
         ref = FirebaseDatabase.getInstance().reference.child("Tamas").child("Locations")
+
+        ref.addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(p0: DataSnapshot, p1: String?) {
+                val location = p0.getValue(LocationModel::class.java)
+                location?.apply {
+                    val otherTime = Timestamp.toDouble()
+
+                    if (System.currentTimeMillis() - otherTime > DELTA_TIME) {
+                        p0.ref.removeValue()
+
+                    } else {
+                        googleMap.apply {
+                            addMarker(
+                                MarkerOptions().position(LatLng(Latitude.toDouble(), Longitude.toDouble())).title(
+                                    Date(Timestamp.toLong()).toString()
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+
+            override fun onChildRemoved(p0: DataSnapshot) {
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.d("myTag", "A hiba: ${error.message}")
+            }
+
+            override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+            }
+
+            override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+            }
+        })
     }
 
     private fun startLocationMonitoring() {
@@ -88,7 +126,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                         LocationModel(
                             location.longitude.toString(),
                             location.latitude.toString(),
-                            Calendar.getInstance().time.toString()
+                            System.currentTimeMillis().toString()
                         )
                     )
                 }
@@ -142,12 +180,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         MapsInitializer.initialize(context)
 
         this.googleMap = googleMap
-        val budapest = CameraPosition.builder().target(LatLng(47.0, 19.0)).zoom(10.0F).bearing(0F).tilt(45F).build()
-
-        this.googleMap.apply {
-            mapType = GoogleMap.MAP_TYPE_NORMAL
-            addMarker(MarkerOptions().position(LatLng(47.0, 19.0)).title("Hungary").snippet("Remélem működik"))
-            moveCamera(CameraUpdateFactory.newCameraPosition(budapest))
-        }
+        this.googleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
     }
 }
