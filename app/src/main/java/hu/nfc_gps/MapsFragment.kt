@@ -19,8 +19,10 @@ import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.*
 import hu.nfc_gps.models.LocationModel
+import kotlinx.android.synthetic.main.fragment_maps.*
 import java.util.*
 
 class MapsFragment : Fragment(), OnMapReadyCallback {
@@ -146,7 +148,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                 )
             ) {
                 //TODO a Toast-okat ki kell cserélni SnackBar-okra
-                Toast.makeText(activity, "Szükséges a GPS-hez", Toast.LENGTH_SHORT).show()
+                Snackbar.make(mapsFragment, "Szükséges a GPS-hez", Snackbar.LENGTH_INDEFINITE).show()
             }
 
             ActivityCompat.requestPermissions(
