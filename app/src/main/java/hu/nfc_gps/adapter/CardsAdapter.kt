@@ -13,11 +13,23 @@ import kotlinx.android.synthetic.main.nfc_card_list_row.view.*
 
 class CardsAdapter(private val context: Context) : RecyclerView.Adapter<CardsAdapter.ViewHolder>() {
 
+    companion object {
+        var AID: String? = null
+    }
     //TODO forgatás esetén elveszik, hogy melyik kártya van kiválasztva
     //TODO az AID nincs megjelenítve az XML-ben
     //TODO ha valaki már  be van jelentkezve, akkor ne kelljen újra bejelentkeznie az app elindításakor
     private var selectedCard = -1
     private val cards = mutableListOf<NfcCardModel>()
+    private var cardCallback: OnCardSelectedListener? = null
+
+    interface OnCardSelectedListener {
+        fun onCardSelected(Aid: String)
+    }
+
+    fun setOnCardSelectedListener(param: OnCardSelectedListener) {
+        cardCallback = param
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -26,13 +38,17 @@ class CardsAdapter(private val context: Context) : RecyclerView.Adapter<CardsAda
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val (place, until) = cards[holder.adapterPosition]
+        val (place, until, aid) = cards[holder.adapterPosition]
         holder.apply {
             tvPlace.text = place
             tvUntil.text = until
             rbCard.apply {
                 isChecked = (position == selectedCard)
                 setOnClickListener {
+                    cardCallback?.apply {
+                        onCardSelected(aid)
+                        AID = aid
+                    }
                     selectedCard = adapterPosition
                     notifyDataSetChanged()
                 }

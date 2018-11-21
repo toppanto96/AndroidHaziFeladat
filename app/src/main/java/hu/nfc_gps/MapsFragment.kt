@@ -27,7 +27,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
     companion object {
         private const val MY_REQUEST_CODE = 100
-        private const val DELTA_TIME = 20_000
+        private const val DELTA_TIME = 14_400_000
     }
 
     lateinit var googleMap: GoogleMap
