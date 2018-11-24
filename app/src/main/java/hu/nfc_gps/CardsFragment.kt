@@ -11,10 +11,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 import hu.nfc_gps.adapter.CardsAdapter
 import hu.nfc_gps.models.NfcCardModel
 import hu.nfc_gps.service.CardService
@@ -25,6 +23,13 @@ class CardsFragment : Fragment(), CardsAdapter.OnCardSelectedListener {
     private lateinit var cardsAdapter: CardsAdapter
     private lateinit var cardsLayoutManager: RecyclerView.LayoutManager
     private lateinit var cardEmulation: CardEmulation
+    private lateinit var auth: FirebaseAuth
+    private lateinit var database: FirebaseDatabase
+    private lateinit var ref: DatabaseReference
+
+    companion object {
+        private const val CARD_KEY = "Cards"
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_cards, container, false)
@@ -33,9 +38,15 @@ class CardsFragment : Fragment(), CardsAdapter.OnCardSelectedListener {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        auth = FirebaseAuth.getInstance()
+
+        database = FirebaseDatabase.getInstance()
+
+        ref = database.reference.child(auth.uid.toString()).child(CARD_KEY)
+
         cardEmulation = CardEmulation.getInstance(NfcAdapter.getDefaultAdapter(activity as MainMenuActivity))
 
-        this.cardsAdapter = CardsAdapter(activity as MainMenuActivity)
+        cardsAdapter = CardsAdapter(activity as MainMenuActivity)
 
         cardsLayoutManager = LinearLayoutManager(activity as MainMenuActivity)
 
@@ -46,30 +57,29 @@ class CardsFragment : Fragment(), CardsAdapter.OnCardSelectedListener {
 
         cardsAdapter.setOnCardSelectedListener(this)
 
-        val database = FirebaseDatabase.getInstance()
-        val ref = database.reference.child("Tamas").child("Cards")
-
         ref.addChildEventListener(object : ChildEventListener {
-            override fun onChildAdded(p0: DataSnapshot, p1: String?) {
-                val card = p0.getValue(NfcCardModel::class.java)
+            override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
+                val card = dataSnapshot.getValue(NfcCardModel::class.java)
                 card?.let {
                     cardsAdapter.addCard(card)
                     cardsAdapter.notifyDataSetChanged()
                 }
             }
 
-            override fun onCancelled(p0: DatabaseError) {
-                Log.d("myTag", "A hiba: ${p0.message}")
+            override fun onCancelled(error: DatabaseError) {
+                Log.d("myTag", "A hiba: ${error.message}")
             }
 
-            override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+            override fun onChildMoved(dataSnapshot: DataSnapshot, s: String?) {
+                //empty
             }
 
-            override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+            override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
+                //empty
             }
 
-            override fun onChildRemoved(p0: DataSnapshot) {
-                val card = p0.getValue(NfcCardModel::class.java)
+            override fun onChildRemoved(dataSnapshot: DataSnapshot) {
+                val card = dataSnapshot.getValue(NfcCardModel::class.java)
                 card?.let {
                     cardsAdapter.removeCard(card)
                     cardsAdapter.notifyDataSetChanged()
@@ -78,18 +88,11 @@ class CardsFragment : Fragment(), CardsAdapter.OnCardSelectedListener {
         })
     }
 
-    override fun onCardSelected(Aid: String) {
+    override fun onCardSelected(aid: String) {
         cardEmulation.registerAidsForService(
             ComponentName(activity as MainMenuActivity, CardService::class.java),
-            "other",
-            mutableListOf(Aid)
+            CardEmulation.CATEGORY_OTHER,
+            mutableListOf(aid)
         )
-
-        val result = cardEmulation.getAidsForService(
-            ComponentName(activity as MainMenuActivity, CardService::class.java),
-            "other"
-        )
-
-        Log.d("myTag", result.toString())
     }
 }

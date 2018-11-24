@@ -20,6 +20,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import hu.nfc_gps.models.LocationModel
 import kotlinx.android.synthetic.main.fragment_maps.*
@@ -30,6 +31,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     companion object {
         private const val MY_REQUEST_CODE = 100
         private const val DELTA_TIME = 14_400_000
+        private const val LOCATION_KEY = "Locations"
     }
 
     lateinit var googleMap: GoogleMap
@@ -37,6 +39,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     lateinit var myView: View
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var auth: FirebaseAuth
+    private lateinit var database: FirebaseDatabase
     private lateinit var ref: DatabaseReference
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -70,17 +74,21 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         super.onActivityCreated(savedInstanceState)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity as Activity)
-        ref = FirebaseDatabase.getInstance().reference.child("Tamas").child("Locations")
+
+        auth = FirebaseAuth.getInstance()
+
+        database = FirebaseDatabase.getInstance()
+
+        ref = database.reference.child(auth.uid.toString()).child(LOCATION_KEY)
 
         ref.addChildEventListener(object : ChildEventListener {
-            override fun onChildAdded(p0: DataSnapshot, p1: String?) {
-                val location = p0.getValue(LocationModel::class.java)
+            override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
+                val location = dataSnapshot.getValue(LocationModel::class.java)
                 location?.apply {
                     val otherTime = Timestamp.toDouble()
 
                     if (System.currentTimeMillis() - otherTime > DELTA_TIME) {
-                        p0.ref.removeValue()
-
+                        dataSnapshot.ref.removeValue()
                     } else {
                         googleMap.apply {
                             addMarker(
@@ -93,28 +101,27 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                 }
             }
 
-            override fun onChildRemoved(p0: DataSnapshot) {
+            override fun onChildRemoved(dataSnapshot: DataSnapshot) {
+                //empty
             }
 
             override fun onCancelled(error: DatabaseError) {
                 Log.d("myTag", "A hiba: ${error.message}")
             }
 
-            override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+            override fun onChildMoved(dataSnapshot: DataSnapshot, s: String?) {
+                //empty
             }
 
-            override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+            override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
+                //empty
             }
         })
     }
 
-    private fun startLocationMonitoring() {
-        requestNeededPermission()
-    }
+    private fun startLocationMonitoring() = requestNeededPermission()
 
-    private fun stopLocationMonitoring() {
-        fusedLocationClient.removeLocationUpdates(locationCallback)
-    }
+    private fun stopLocationMonitoring() = fusedLocationClient.removeLocationUpdates(locationCallback)
 
     private var locationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult?) {
@@ -147,7 +154,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                     android.Manifest.permission.ACCESS_FINE_LOCATION
                 )
             ) {
-                //TODO a Toast-okat ki kell cserélni SnackBar-okra
                 Snackbar.make(mapsFragment, "Szükséges a GPS-hez", Snackbar.LENGTH_INDEFINITE).show()
             }
 
@@ -170,9 +176,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         when (requestCode) {
             MY_REQUEST_CODE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(activity, "Meg van az engedély", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity, getString(R.string.permissionGrantedText), Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(activity as Activity, "Nincs mege az engedély", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity as Activity, getString(R.string.permissionDeniedText), Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         }
