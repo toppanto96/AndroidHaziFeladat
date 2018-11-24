@@ -16,9 +16,7 @@ class CardsAdapter(private val context: Context) : RecyclerView.Adapter<CardsAda
     companion object {
         var AID: String? = null
     }
-    //TODO forgatás esetén elveszik, hogy melyik kártya van kiválasztva
     //TODO az AID nincs megjelenítve az XML-ben
-    //TODO ha valaki már  be van jelentkezve, akkor ne kelljen újra bejelentkeznie az app elindításakor
     private var selectedCard = -1
     private val cards = mutableListOf<NfcCardModel>()
     private var cardCallback: OnCardSelectedListener? = null
@@ -66,6 +64,12 @@ class CardsAdapter(private val context: Context) : RecyclerView.Adapter<CardsAda
     fun removeCard(card: NfcCardModel) {
         cards.remove(card)
         notifyDataSetChanged()
+    }
+
+    fun getSelectedCardIndex() = selectedCard
+
+    fun SetSelectedCardIndex(index: Int) {
+        selectedCard = index
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

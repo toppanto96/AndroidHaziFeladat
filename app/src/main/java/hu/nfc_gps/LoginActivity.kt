@@ -36,9 +36,8 @@ class LoginActivity : BaseActivity() {
                     auth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener(this) { task ->
                             if (task.isSuccessful) {
-                                //TODO le kell ellenőrizni, hogy be van-e már jelentkezve valaki(Firebase és SharedPreferences-t is le kell ellenőrizni)
-                                //TODO a kijelentkezést is meg kell csinálni(Firebase és SharedPreferences törlése)
                                 startActivity(Intent(this@LoginActivity, MainMenuActivity::class.java))
+                                finish()
                             } else {
                                 text_input_email.editText?.text = null
                                 text_input_password.editText?.text = null
