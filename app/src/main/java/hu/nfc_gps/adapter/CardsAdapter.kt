@@ -16,7 +16,7 @@ class CardsAdapter(private val context: Context) : RecyclerView.Adapter<CardsAda
     companion object {
         var AID: String? = null
     }
-    //TODO az AID nincs megjelenítve az XML-ben
+
     private var selectedCard = -1
     private val cards = mutableListOf<NfcCardModel>()
     private var cardCallback: OnCardSelectedListener? = null
