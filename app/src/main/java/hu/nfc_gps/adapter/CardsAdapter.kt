@@ -44,7 +44,7 @@ class CardsAdapter(private val context: Context) : RecyclerView.Adapter<CardsAda
                 isChecked = (position == selectedCard)
                 setOnClickListener {
                     cardCallback?.apply {
-                        onCardSelected(aid)
+                        onCardSelected(Aid = aid)
                         AID = aid
                     }
                     selectedCard = adapterPosition
@@ -64,12 +64,6 @@ class CardsAdapter(private val context: Context) : RecyclerView.Adapter<CardsAda
     fun removeCard(card: NfcCardModel) {
         cards.remove(card)
         notifyDataSetChanged()
-    }
-
-    fun getSelectedCardIndex() = selectedCard
-
-    fun SetSelectedCardIndex(index: Int) {
-        selectedCard = index
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

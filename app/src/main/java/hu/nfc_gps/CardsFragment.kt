@@ -88,11 +88,11 @@ class CardsFragment : Fragment(), CardsAdapter.OnCardSelectedListener {
         })
     }
 
-    override fun onCardSelected(aid: String) {
+    override fun onCardSelected(Aid: String) {
         cardEmulation.registerAidsForService(
             ComponentName(activity as MainMenuActivity, CardService::class.java),
             CardEmulation.CATEGORY_OTHER,
-            mutableListOf(aid)
+            mutableListOf(Aid)
         )
     }
 }
